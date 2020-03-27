@@ -1,18 +1,18 @@
 /**
- * Copyright (c) 2004-2020 Carnegie Mellon University and others. (see Contributors file). 
+ * Copyright (c) 2004-2020 Carnegie Mellon University and others. (see Contributors file).
  * All Rights Reserved.
- * 
+ *
  * NO WARRANTY. ALL MATERIAL IS FURNISHED ON AN "AS-IS" BASIS. CARNEGIE MELLON UNIVERSITY MAKES NO WARRANTIES OF ANY
  * KIND, EITHER EXPRESSED OR IMPLIED, AS TO ANY MATTER INCLUDING, BUT NOT LIMITED TO, WARRANTY OF FITNESS FOR PURPOSE
  * OR MERCHANTABILITY, EXCLUSIVITY, OR RESULTS OBTAINED FROM USE OF THE MATERIAL. CARNEGIE MELLON UNIVERSITY DOES NOT
  * MAKE ANY WARRANTY OF ANY KIND WITH RESPECT TO FREEDOM FROM PATENT, TRADEMARK, OR COPYRIGHT INFRINGEMENT.
- * 
+ *
  * This program and the accompanying materials are made available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
  * SPDX-License-Identifier: EPL-2.0
- * 
+ *
  * Created, in part, with funding and support from the United States Government. (see Acknowledgments file).
- * 
+ *
  * This program includes and/or can make use of certain third party source code, object code, documentation and other
  * files ("Third Party Software"). The Third Party Software that is used by this program is dependent upon your system
  * configuration. By using this program, You agree to comply with any and all relevant Third Party Software terms and
@@ -69,7 +69,7 @@ import org.osate.xtext.aadl2.properties.util.GetProperties;
 public final class FHAReport {
 
 	public enum HazardFormat {
-		EMV2, MILSTD882, ARP4761
+		EMV2, MILSTD882, ARP4761, ISO14971
 	};
 
 	private HazardFormat currentFormat = HazardFormat.EMV2;
@@ -327,6 +327,15 @@ public final class FHAReport {
 					+ "Qualitative Probability, Quantitative Probability, Qualitative Probability Objective, Quantitative Probability Objective, Development Assurance Level, "
 					+ "Verification Method, " + "Safety Report, " + "Comment");
 			break;
+		case ISO14971:
+			report.addOutputNewline("Component, Error Model Element," + " Hazard Title, Description, Crossreference, "
+					+ "Failure, " + "Failure Effect, " + "Operational Phases, Environment,"
+					+ "  Risk, Mishap, Failure Condition, Basis, Occurrences Per Hazard, "
+					+ "Severity, Severity Classification, "
+					+ "Qualitative Probability, Quantitative Probability, Qualitative Probability Objective, "
+					+ "Quantitative Probability Objective, " // Development Assurance Level, "
+					+ "Verification Method, " + "Safety Report, " + "Comment");
+			break;
 		case MILSTD882:
 			report.addOutputNewline("Component, Error Model Element," + " Hazard Title, Description, Crossreference, "
 					+ "Failure, " + "Failure Effect, " + "Operational Phases, Environment," + " Mishap, Risk,"
@@ -347,6 +356,9 @@ public final class FHAReport {
 			break;
 		case ARP4761:
 			reportFHAEntryARP4761(report, fields, Severity, Likelihood, ci, failureModeName, typetext);
+			break;
+		case ISO14971:
+			reportFHAEntryISO14971(report, fields, Severity, Likelihood, ci, failureModeName, typetext);
 			break;
 		case MILSTD882:
 			reportFHAEntryMILSTD882(report, fields, Severity, Likelihood, ci, failureModeName, typetext);
@@ -443,6 +455,82 @@ public final class FHAReport {
 	}
 
 	protected void reportFHAEntryARP4761(WriteToFile report, EList<BasicPropertyAssociation> fields,
+			PropertyExpression Severity, PropertyExpression Likelihood, InstanceObject ci, String failureModeName,
+			String typetext) {
+		String componentName = ci.getName();
+		/*
+		 * We include the parent component name if not null and if this is not the root system
+		 * instance.
+		 */
+		if ((ci.getContainingComponentInstance() != null)
+				&& (ci.getContainingComponentInstance() != ci.getSystemInstance())) {
+			componentName = ci.getContainingComponentInstance().getName() + "/" + componentName;
+		}
+		if (ci instanceof SystemInstance) {
+			componentName = "Root system";
+		}
+		// component name & error propagation name/type
+		report.addOutput(componentName + ", \"" + (typetext.isEmpty() ? "" : typetext)
+				+ (failureModeName.isEmpty() ? "" : " on " + failureModeName) + "\"");
+		// description (Effect)
+		addComma(report);
+		reportStringProperty(fields, "hazardtitle", report);
+		addComma(report);
+		reportStringProperty(fields, "description", report);
+		// crossreference
+		addComma(report);
+		reportStringProperty(fields, "crossreference", report);
+		// failure
+		addComma(report);
+		reportStringProperty(fields, "failure", report);
+		// failure effect
+		addComma(report);
+		reportStringProperty(fields, "failureeffect", report);
+		addComma(report);
+		reportStringProperty(fields, "phases", report);
+		addComma(report);
+		reportStringProperty(fields, "environment", report);
+		addComma(report);
+		reportStringProperty(fields, "risk", report);
+		addComma(report);
+		reportStringProperty(fields, "mishap", report);
+		// mishap/failure condition
+		addComma(report);
+		reportStringProperty(fields, "failurecondition", report);
+		// severity
+		addComma(report);
+		reportEnumerationOrIntegerPropertyConstantPropertyValue(fields, "FailureConditionClassification", report,
+				Severity);
+		// criticality
+		addComma(report);
+		reportEnumerationOrIntegerPropertyConstantPropertyValue(fields, "QualitativeProbability", report, Likelihood);
+		// probability
+		addComma(report);
+		reportEnumerationOrIntegerPropertyConstantPropertyValue(fields, "QuantitativeProbability", report, null);
+		// criticality
+		addComma(report);
+		reportEnumerationOrIntegerPropertyConstantPropertyValue(fields, "QualitativeProbabilityObjective", report,
+				Likelihood);
+		// probability
+		addComma(report);
+		reportEnumerationOrIntegerPropertyConstantPropertyValue(fields, "QuantitativeProbabilityObjective", report,
+				null);
+		// Development assurance level
+		addComma(report);
+		reportEnumerationOrIntegerPropertyConstantPropertyValue(fields, "developmentassurancelevel", report, null);
+		// verification method
+		addComma(report);
+		reportStringProperty(fields, "verificationmethod", report);
+		// safety report
+		addComma(report);
+		reportStringProperty(fields, "safetyreport", report);
+		// comment
+		addComma(report);
+		reportStringProperty(fields, "comment", report);
+		report.addOutputNewline("");
+	}
+
+	protected void reportFHAEntryISO14971(WriteToFile report, EList<BasicPropertyAssociation> fields,
 			PropertyExpression Severity, PropertyExpression Likelihood, InstanceObject ci, String failureModeName,
 			String typetext) {
 		String componentName = ci.getName();

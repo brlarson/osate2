@@ -31,6 +31,10 @@ censes only apply to the Third Party Software and not any other portion of this 
             id="org.osate.aadl2.errormodel.analysis.aadlcontribution1">
       </aadlcontribution>
       <aadlcontribution
+            file="resources/properties/ISO14971.aadl"
+            id="org.osate.aadl2.errormodel.analysis.aadlcontribution4">
+      </aadlcontribution>
+      <aadlcontribution
             file="resources/properties/MILSTD882.aadl"
             id="org.osate.aadl2.errormodel.analysis.aadlcontribution2">
       </aadlcontribution>
