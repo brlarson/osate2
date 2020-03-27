@@ -335,9 +335,9 @@ public final class FHAReport {
 			report.addOutputNewline("Component, Error Model Element," + " Hazard Title, Description, Crossreference, "
 					+ "Failure, " + "Failure Effect, " + "Operational Phases, Environment,"
 					+ "  Risk, Mishap, Failure Condition, Basis, Occurrences Per Hazard, "
-					+ "Severity, Severity Classification, "
+					+ "Severity, Severity Category, "
 					+ "Qualitative Probability, Quantitative Probability, Qualitative Probability Objective, "
-					+ "Quantitative Probability Objective, " // Development Assurance Level, "
+					+ "Quantitative Probability Objective, "
 					+ "Verification Method, " + "Safety Report, " + "Comment");
 			break;
 		case MILSTD882:
@@ -577,15 +577,24 @@ public final class FHAReport {
 		// mishap/failure condition
 		addComma(report);
 		reportStringProperty(fields, "failurecondition", report);
+		// basis
+		addComma(report);
+		reportEnumerationOrIntegerPropertyConstantPropertyValue(fields, "basis", report, null);
+		// occurrences per hazard
+		addComma(report);
+		reportEnumerationOrIntegerPropertyConstantPropertyValue(fields, "NumberOfOccurrencesPerHazard", report, null);
 		// severity
 		addComma(report);
-		reportEnumerationOrIntegerPropertyConstantPropertyValue(fields, "FailureConditionClassification", report,
-				Severity);
+		reportEnumerationOrIntegerPropertyConstantPropertyValue(fields, "Severity", report, Severity);
+		// severity category
+		addComma(report);
+		reportEnumerationOrIntegerPropertyConstantPropertyValue(fields, "SeverityCategory", report, null);
 		// criticality
 		addComma(report);
 		reportEnumerationOrIntegerPropertyConstantPropertyValue(fields, "QualitativeProbability", report, Likelihood);
 		// probability
 		addComma(report);
+//want to replace null with 1/NumberOfOccurrencesPerHazard if defined
 		reportEnumerationOrIntegerPropertyConstantPropertyValue(fields, "QuantitativeProbability", report, null);
 		// criticality
 		addComma(report);
@@ -596,8 +605,8 @@ public final class FHAReport {
 		reportEnumerationOrIntegerPropertyConstantPropertyValue(fields, "QuantitativeProbabilityObjective", report,
 				null);
 		// Development assurance level
-		addComma(report);
-		reportEnumerationOrIntegerPropertyConstantPropertyValue(fields, "developmentassurancelevel", report, null);
+//		addComma(report);
+//		reportEnumerationOrIntegerPropertyConstantPropertyValue(fields, "developmentassurancelevel", report, null);
 		// verification method
 		addComma(report);
 		reportStringProperty(fields, "verificationmethod", report);
@@ -765,6 +774,8 @@ public final class FHAReport {
 			return EMV2Properties.getHazardsProperty(ci, target, ts);
 		case ARP4761:
 			return EMV2Properties.getARP4761HazardsProperty(ci, target, ts);
+		case ISO14971:
+			return EMV2Properties.getISO14971HazardsProperty(ci, target, ts);
 		case MILSTD882:
 			return EMV2Properties.getMILSTD882HazardsProperty(ci, target, ts);
 		}

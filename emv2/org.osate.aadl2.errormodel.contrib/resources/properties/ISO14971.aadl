@@ -1,6 +1,7 @@
 property set ISO14971 is
 with EMV2;
 -- Severity labels from ISO14971 Table D.3
+SeverityClassification: type enumeration (Catastrophic, Critical, Serious, Minor, Negligible, NoEffect);
 Catastrophic : constant EMV2::SeverityRange => 1;  --Results in patient death
 Critical     : constant EMV2::SeverityRange => 2; -- Results in permanent impairment or life-threatening injury
 Serious      : constant EMV2::SeverityRange => 3;  --Results in injury or impairment requiring professional medical intervention
@@ -16,7 +17,6 @@ Remote     : constant EMV2::LikelihoodLabels => D;  --  < 10^−5 and ≥ 10^−
 Improbable : constant EMV2::LikelihoodLabels => E;  --  < 10^−6
 
 
-SeverityClassification: type enumeration (Catastrophic, Critical, Serious, Minor, Negligible, NoEffect);
 
 ProbabilityLabels: type enumeration (Frequent, Probable, Occasional, Remote, Improbable);
 
@@ -24,17 +24,17 @@ ProbabilityBasis: type enumeration (HazardsPerHour, NumberOfOccurrencesPerHazard
 
 Hazards: list of record
   (
-   CrossReference : aadlstring;   -- cross reference to an external document 
    HazardTitle : aadlstring;      -- short descriptive phrase for hazard
    Description : aadlstring;      -- description of the hazard (same as HazardTitle)
+   CrossReference : aadlstring;   -- cross reference to an external document 
    Failure : aadlstring;          -- system deviation resulting in failure effect
    FailureEffect : aadlstring;    -- description of the effect of a failure (mode)
    Phases : list of aadlstring;   -- operational phases in which the hazard is relevant
    Environment : aadlstring;      -- description of operational environment
-   Mishap : aadlstring;           -- description of event (series) resulting in 
-                                  -- unintentional death, etc.(MILSTD882)
    Risk : aadlstring;             -- description of risk. Risk is characterized by 
                                   -- severity, likelihood, and occurrence probability
+   Mishap : aadlstring;           -- description of event (series) resulting in 
+                                  -- unintentional death, etc.(MILSTD882)
    FailureCondition : aadlstring; -- description of event (series) resulting in 
                                   -- unintentional death, etc. (ISO 14971)
    Basis :  ISO14971::ProbabilityBasis;  --hazards per hour, or hazard per number of occurrences
@@ -47,7 +47,6 @@ Hazards: list of record
      --o.w. hazards per hour of operation   
    QualitativeProbabilityObjective  : ISO14971::ProbabilityLabels;      -- acceptable risk as probability 
    QuantitativeProbabilityObjective : EMV2::ProbabilityRange;           -- probability objective for hazard   
---   DevelopmentAssuranceLevel        : EMV2::DALLabels; -- level of rigor in development 
    VerificationMethod : aadlstring; -- verification method to address the hazard
    SafetyReport : aadlstring;       -- analysis/assessment of hazard
    Comment : aadlstring;            -- additional information about the hazard
