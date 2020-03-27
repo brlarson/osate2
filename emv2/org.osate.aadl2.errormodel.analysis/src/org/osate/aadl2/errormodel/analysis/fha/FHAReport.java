@@ -69,7 +69,11 @@ import org.osate.xtext.aadl2.properties.util.GetProperties;
 public final class FHAReport {
 
 	public enum HazardFormat {
-		EMV2, MILSTD882, ARP4761, ISO14971
+		EMV2, MILSTD882, ARP4761,
+		/**
+		* @since 1.1
+		*/
+		ISO14971
 	};
 
 	private HazardFormat currentFormat = HazardFormat.EMV2;

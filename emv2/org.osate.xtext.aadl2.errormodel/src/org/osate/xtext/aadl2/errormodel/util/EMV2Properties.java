@@ -316,6 +316,9 @@ public class EMV2Properties {
 		return result;
 	}
 
+	/**
+	 * @since 2.0
+	 */
 	public static List<EMV2PropertyAssociation> getISO14971HazardsProperty(NamedElement ci, NamedElement target,
 			TypeSet ts) {
 		List<EMV2PropertyAssociation> result = getProperty("ISO14971::hazards", ci, target, ts);
